@@ -42,14 +42,17 @@ def calculoDatos(nombreFichero):
 
 escribeFichero("datos.txt", "", "w")    
 escribeFichero("auxiliar.txt", "", "w")
+t_ref = time.time()
 
-while i < 12:
+while i < 11:
     valor = leeLinea()   
     if i > 8:
-        tiempo_anterior = time.time()
-        tiempo_actual = time.time()
-        while ((tiempo_actual - tiempo_anterior) < segundos):
-            tiempo_actual = time.time()
+        t_anterior = time.time()
+        t_actual = time.time()
+        while ((t_actual - t_anterior) < segundos):
+            t_actual = time.time()
+            escribeFichero("datos.txt", str(t_actual - t_ref), "a")
+            escribeFichero("datos.txt", ";", "a")
             linea = leeLinea()
             escribeFichero("datos.txt", linea, "ab")
             escribeFichero("auxiliar.txt", linea, "ab")
