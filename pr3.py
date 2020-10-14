@@ -7,10 +7,12 @@ Created on Sun Oct 11 21:51:54 2020
 
 import serial
 import time
+import pandas as pd
 
 puerto = "COM3" 
 baudio = 115200
 i = 0
+segundos = 5
 
 esp32 = serial.Serial(puerto, baudio) #Defino el objeto ESP señalando el puerto al que tiene que mirar y la frecuencia de muestreo
 time.sleep(2)                         #Espero 2s para que se acople el puerto serie
@@ -29,14 +31,32 @@ def escribeFichero(nombre, dato, tipo):
     #f.write('\n')
     f.close()
 
-escribeFichero("datos.txt", "", "w")    
+def calculoDatos(nombreFichero):
+    df = pd.read_csv(nombreFichero, ";")
+    print("He leido el fichero")
+    #filas, columnas = df.shape
+    #print(df.columns)
+    med = df.mean()   #Devuelve una lista con la media de cada columna
+    var = df.var()    #Devuelve una lista con la varianza de cada columna
+    return med, var
 
-while i < 20:
+escribeFichero("datos.txt", "", "w")    
+escribeFichero("auxiliar.txt", "", "w")
+
+while i < 12:
     valor = leeLinea()   
     if i > 8:
-        escribeFichero("datos.txt", valor, "ab")    #ab indica que estamos concatenando valores de bytes
-        print(valor)
+        tiempo_anterior = time.time()
+        tiempo_actual = time.time()
+        while ((tiempo_actual - tiempo_anterior) < segundos):
+            tiempo_actual = time.time()
+            linea = leeLinea()
+            escribeFichero("datos.txt", linea, "ab")
+            escribeFichero("auxiliar.txt", linea, "ab")
+        media5s, varianza5s = calculoDatos("auxiliar.txt")
+        #print("Media:", "\n" , media5s)
+        #print("Varianza:", "\n" , varianza5s)
+        escribeFichero("auxiliar.txt","", "w") #con esta linea borro todos los datos de aux
     i = i + 1
     
-type(valor)
 esp32.close()
