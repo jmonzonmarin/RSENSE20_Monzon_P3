@@ -9,7 +9,7 @@ import serial
 import time
 
 puerto = "COM3" 
-baudio = 9600
+baudio = 115200
 i = 0
 
 esp32 = serial.Serial(puerto, baudio) #Defino el objeto ESP señalando el puerto al que tiene que mirar y la frecuencia de muestreo
@@ -20,12 +20,23 @@ def leeLinea():
     if(esp32.isOpen() == False):
         esp32.open()
     salida = esp32.readline()
+    #salida = esp32.read()
     return salida
 
+def escribeFichero(nombre, dato, tipo):
+    f = open(nombre, tipo)
+    f.write(dato)        # '\n' añade un salto de linea a la frase
+    #f.write('\n')
+    f.close()
+
+escribeFichero("datos.txt", "", "w")    
+
 while i < 20:
-    valor = leeLinea()    
-    print(valor(2,-5))
+    valor = leeLinea()   
+    if i > 8:
+        escribeFichero("datos.txt", valor, "ab")    #ab indica que estamos concatenando valores de bytes
+        print(valor)
     i = i + 1
-    #`print(i)
+    
 type(valor)
 esp32.close()
